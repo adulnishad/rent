@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rent Status - {{ shop.name }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0; padding: 0;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      background-color: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .header {
+      position: relative;
+      height: 280px;
+      background-size: cover;
+      background-position: center;
+      background-image: url('{{ shop.image_url|default:"https://images.unsplash.com/photo-1568605114967-8130f3a36994" }}');
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .title {
+      position: absolute;
+      bottom: 20px;
+      left: 30px;
+      color: #fff;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 2.2rem;
+    }
+
+    .details {
+      padding: 30px;
+    }
+
+    .info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    .info div {
+      margin: 5px 10px;
+    }
+
+    .summary {
+      margin-bottom: 20px;
+    }
+
+    .summary span {
+      display: inline-block;
+      background-color: #3498db;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-right: 10px;
+      font-weight: 600;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 14px 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background-color: #2c3e50;
+      color: white;
+      text-transform: uppercase;
+    }
+
+    .paid {
+      background-color: #eafaf1;
+      color: #27ae60;
+      font-weight: bold;
+      padding: 6px 12px;
+      border-radius: 20px;
+    }
+
+    .unpaid {
+      background-color: #fdecea;
+      color: #c0392b;
+      font-weight: bold;
+      padding: 6px 12px;
+      border-radius: 20px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .btn {
+      background-color: #3498db;
+      color: white;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 25px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: 0.3s;
+      margin: 5px;
+    }
+
+    .btn:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="overlay"></div>
+    <div class="title">
+      <h1>{{ shop.name }}</h1>
+    </div>
+  </div>
+
+  <div class="details">
+    <div class="info">
+      <div><strong>Phone:</strong> {{ shop.phone }}</div>
+      <div><strong>Owner Address:</strong> {{ shop.owner_address }}</div>
+      <div><strong>Shop Address:</strong> {{ shop.shop_address }}</div>
+    </div>
+
+    <div class="summary">
+      <span>Total Rents: {{ total_rents }}</span>
+      <span>Unpaid: {{ unpaid_count }}</span>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Year</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for rent in rent_records %}
+        <tr>
+          <td>{{ rent.get_month_display }}</td>
+          <td>{{ rent.year }}</td>
+          <td>
+            {% if rent.is_paid %}
+              <span class="paid">Paid</span>
+            {% else %}
+              <span class="unpaid">Unpaid</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="3">No rent records found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <a href="/" class="btn">← Back to Shop List</a>
+      <a href="{% url 'export_rent_pdf' shop.id %}" class="btn">📄 Export PDF</a>
+      <a href="{% url 'export_rent_excel' shop.id %}" class="btn">📊 Export Excel</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
