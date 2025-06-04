@@ -1,9 +1,13 @@
 from pathlib import Path
+import dj_database_url
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'your-secret-key'
-DEBUG = True
+SECRET_KEY = 'your-secret-key'  # Replace with your actual secret key
+
+DEBUG = False  # Turn off debug mode for production
+
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.20.2', 'rent-773p.onrender.com']
 
 INSTALLED_APPS = [
@@ -46,11 +50,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'rent_manager.wsgi.application'
 
+# PostgreSQL config for production (Replace the default with your actual DB URL from Render)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+   'default': {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': BASE_DIR / 'db.sqlite3',
+}
+
 }
 
 AUTH_PASSWORD_VALIDATORS = []
@@ -60,5 +66,8 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Required for collectstatic on Render
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
