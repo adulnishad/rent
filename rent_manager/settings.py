@@ -4,9 +4,9 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'your-secret-key'  # Replace with your actual secret key
+SECRET_KEY = os.environ.get('SECRET_KEY', 'unsafe-default-key')
 
-DEBUG = False  # Turn off debug mode for production
+DEBUG = False  # Set to False for production
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.20.2', 'rent-773p.onrender.com']
 
@@ -51,14 +51,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'rent_manager.wsgi.application'
 
-# PostgreSQL config for production (Replace the default with your actual DB URL from Render)
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=True
-    )
-}
+# Database configuration
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
+else:
+    # Fallback to SQLite for local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = []
 
@@ -69,7 +80,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Required for collectstatic on Render
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
